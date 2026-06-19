@@ -1,0 +1,1157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Vatsal Thakor — semiconductor research, device physics, computational modeling." />
+  <meta name="theme-color" content="#f6f7fb" />
+  <title>Vatsal Thakor</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── TOKENS ── */
+    :root {
+      --bg: #f5f6fa;
+      --surface: #ffffff;
+      --text: #111318;
+      --muted: #5c6474;
+      --subtle: #9aa0af;
+      --line: rgba(17,19,24,0.08);
+      --accent: #1848e8;
+      --accent-2: #5b8aff;
+      --accent-soft: rgba(24,72,232,0.08);
+      --radius: 20px;
+      --radius-sm: 12px;
+      --nav-h: 68px;
+      --container: 900px;
+      --shadow: 0 8px 28px rgba(17,19,24,0.07);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      letter-spacing: -0.01em;
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    /* ── LAYOUT ── */
+    .wrap {
+      width: min(var(--container), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    /* ── NAV ── */
+    .nav-outer {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      background: rgba(245,246,250,0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: var(--nav-h);
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: -0.04em;
+      cursor: pointer;
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: inherit;
+      color: var(--text);
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .nav-tabs {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .nav-tab {
+      position: relative;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      letter-spacing: -0.01em;
+      transition: color 150ms ease, background 150ms ease;
+      white-space: nowrap;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+    }
+
+    .nav-tab:hover { color: var(--text); }
+
+    .nav-tab.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    /* ── PAGES ── */
+    .page-host {
+      padding-top: var(--nav-h);
+      min-height: 100vh;
+    }
+
+    .page {
+      display: none;
+      animation: fadein 220ms ease;
+    }
+
+    .page.visible { display: block; }
+
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── ABOUT PAGE ── */
+    .about-hero {
+      padding: 52px 0 40px;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    .about-photo {
+      width: 240px;
+      height: 300px;
+      object-fit: cover;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .about-photo-placeholder {
+      width: 240px;
+      height: 300px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, #dde4f7, #eef1fb);
+      display: grid;
+      place-items: center;
+      font-size: 56px;
+      font-weight: 800;
+      color: var(--accent-2);
+      letter-spacing: -0.08em;
+      box-shadow: var(--shadow);
+    }
+
+    .about-intro { padding-top: 6px; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .about-name {
+      font-size: clamp(2.6rem, 5vw, 4rem);
+      font-weight: 900;
+      line-height: 0.94;
+      letter-spacing: -0.06em;
+      margin-bottom: 16px;
+    }
+
+    .about-tagline {
+      font-size: 1.02rem;
+      color: var(--muted);
+      max-width: 52ch;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    .about-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 8px 22px rgba(24,72,232,0.22);
+    }
+
+    .btn-primary:hover { box-shadow: 0 12px 28px rgba(24,72,232,0.3); }
+
+    .btn-outline {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--line);
+      box-shadow: 0 2px 8px rgba(17,19,24,0.05);
+    }
+
+    /* ── STAT ROW ── */
+    .stat-row {
+      display: flex;
+      gap: 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .stat-item {
+      flex: 1;
+      padding: 16px 0;
+      border-right: 1px solid var(--line);
+    }
+
+    .stat-item:last-child { border-right: none; padding-left: 20px; }
+    .stat-item:not(:first-child) { padding-left: 20px; }
+
+    .stat-val {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--text);
+      display: block;
+    }
+
+    .stat-lbl {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 2px;
+      display: block;
+    }
+
+    /* ── ABOUT BODY ── */
+    .about-body {
+      padding-bottom: 60px;
+    }
+
+    .about-bio {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      margin-bottom: 40px;
+    }
+
+    .about-bio p {
+      font-size: 0.98rem;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    /* Skills grid on about */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 40px;
+    }
+
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 18px 16px;
+      box-shadow: 0 2px 10px rgba(17,19,24,0.04);
+    }
+
+    .skill-kicker {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .skill-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+
+    .skill-desc {
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      height: 26px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: rgba(17,19,24,0.04);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid var(--line);
+    }
+
+    /* ── SHARED PAGE LAYOUT ── */
+    .page-header {
+      padding: 48px 0 32px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 36px;
+    }
+
+    .page-header h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      letter-spacing: -0.06em;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .page-header p {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 54ch;
+    }
+
+    /* ── TIMELINE ── */
+    .timeline {
+      position: relative;
+      padding-left: 22px;
+      display: grid;
+      gap: 16px;
+      margin-bottom: 60px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 12px;
+      bottom: 12px;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--accent) 0%, var(--line) 100%);
+    }
+
+    .tl-item {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 20px 20px 20px 24px;
+      box-shadow: 0 2px 10px rgba(17,19,24,0.04);
+      transition: border-color 150ms ease, box-shadow 150ms ease;
+    }
+
+    .tl-item:hover {
+      border-color: rgba(24,72,232,0.2);
+      box-shadow: 0 6px 20px rgba(17,19,24,0.07);
+    }
+
+    .tl-dot {
+      position: absolute;
+      left: -29px;
+      top: 22px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft), 0 0 0 5px var(--bg);
+    }
+
+    .tl-year {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .tl-title {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 2px;
+    }
+
+    .tl-sub {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .tl-item ul {
+      padding-left: 16px;
+      margin: 0;
+    }
+
+    .tl-item li {
+      font-size: 0.91rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+      line-height: 1.6;
+    }
+
+    .tl-item p {
+      font-size: 0.91rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── PROJECT CARDS ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 60px;
+    }
+
+    .proj-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: 0 2px 10px rgba(17,19,24,0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+    }
+
+    .proj-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(24,72,232,0.18);
+      box-shadow: 0 10px 28px rgba(17,19,24,0.08);
+    }
+
+    .proj-kicker {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+    }
+
+    .proj-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.3;
+    }
+
+    .proj-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.65;
+      flex: 1;
+    }
+
+    /* ── PUBLICATION ── */
+    .pub-block {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: 0 2px 10px rgba(17,19,24,0.04);
+      margin-bottom: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .pub-kicker {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+    }
+
+    .pub-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.4;
+    }
+
+    .pub-authors {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .pub-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .pub-meta strong { color: var(--text); font-weight: 700; }
+    .pub-meta span.dot { color: var(--subtle); }
+
+    .pub-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      transition: background 150ms ease;
+    }
+
+    .chip:hover { background: rgba(24,72,232,0.14); }
+
+    /* ── CONTACT ── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 60px;
+    }
+
+    .contact-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: 0 2px 10px rgba(17,19,24,0.04);
+    }
+
+    .info-list { display: grid; gap: 0; }
+
+    .info-row {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .info-row:first-child { padding-top: 0; }
+    .info-row:last-child { border-bottom: none; }
+
+    .info-label {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--subtle);
+      margin-bottom: 4px;
+    }
+
+    .info-val {
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: -0.02em;
+    }
+
+    .info-val a { color: var(--accent); }
+    .info-val a:hover { text-decoration: underline; }
+
+    .avail-kicker {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .avail-title {
+      font-size: 1.12rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 10px;
+    }
+
+    .avail-desc {
+      font-size: 0.92rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 22px;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      border-top: 1px solid var(--line);
+      padding: 20px 0 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+      color: var(--subtle);
+    }
+
+    .footer-links { display: flex; gap: 16px; }
+    .footer-links button {
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: inherit;
+      color: var(--subtle);
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .footer-links button:hover { color: var(--text); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 720px) {
+      .about-hero {
+        grid-template-columns: 1fr;
+        padding: 32px 0 24px;
+      }
+
+      .about-photo,
+      .about-photo-placeholder {
+        width: 100%;
+        height: 220px;
+        object-position: center 20%;
+      }
+
+      .about-bio { grid-template-columns: 1fr; gap: 16px; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .stat-row { flex-wrap: wrap; }
+      .stat-item { flex: 0 0 calc(50% - 0.5px); border-right: none; border-bottom: 1px solid var(--line); }
+
+      .nav-tabs { gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .nav-tab { padding: 8px 10px; font-size: 13px; }
+    }
+
+    @media (max-width: 480px) {
+      .about-name { font-size: 2.4rem; }
+      .btn { width: 100%; justify-content: center; }
+      .about-actions { flex-direction: column; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ── NAVIGATION ── -->
+<div class="nav-outer">
+  <div class="wrap nav">
+    <button class="brand" onclick="showPage('about')" aria-label="Go to About">
+      Vatsal Thakor
+    </button>
+
+    <nav class="nav-tabs" aria-label="Sections">
+      <button class="nav-tab active" data-page="about"        onclick="showPage('about')">About</button>
+      <button class="nav-tab"        data-page="experience"   onclick="showPage('experience')">Experience</button>
+      <button class="nav-tab"        data-page="projects"     onclick="showPage('projects')">Projects</button>
+      <button class="nav-tab"        data-page="publications" onclick="showPage('publications')">Publications</button>
+      <button class="nav-tab"        data-page="contact"      onclick="showPage('contact')">Contact</button>
+    </nav>
+  </div>
+</div>
+
+<!-- ── PAGE HOST ── -->
+<div class="page-host">
+
+  <!-- ════════════════════════════
+       ABOUT
+  ════════════════════════════ -->
+  <div id="page-about" class="page visible">
+    <div class="wrap">
+
+      <div class="about-hero">
+        <!-- Replace src with your actual photo path -->
+        <img
+          class="about-photo"
+          src="Assets/Images/Portrait.jpg"
+          alt="Portrait of Vatsal Thakor"
+          onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';"
+        />
+        <div class="about-photo-placeholder" style="display:none;">VT</div>
+
+        <div class="about-intro">
+          <div class="eyebrow">Semiconductor · Device physics · Modeling</div>
+
+          <h1 class="about-name">Vatsal<br>Thakor</h1>
+
+          <p class="about-tagline">
+            ECE graduate and incoming PhD student at IIT Bombay (CSIF). My work sits at the
+            intersection of semiconductor device physics, process simulation, and experimental
+            characterization. I am drawn to problems where careful modeling and lab-based
+            understanding converge to improve process insight and device performance.
+          </p>
+
+          <div class="about-actions">
+            <a class="btn btn-primary" href="Assets/Files/Resume.pdf" target="_blank" rel="noopener">Download Resume</a>
+            <button class="btn btn-outline" onclick="showPage('contact')">Get in Touch</button>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="about-body">
+
+        <h2 style="font-size:1.1rem; font-weight:800; letter-spacing:-0.03em; margin-bottom:16px; color:var(--text);">Skills</h2>
+        <div class="skills-grid">
+          <div class="skill-card">
+            <div class="skill-kicker">Languages</div>
+            <p class="skill-desc">Programming for simulation, hardware design, and embedded development.</p>
+            <div class="tag-row">
+              <span class="tag">Python</span>
+              <span class="tag">C</span>
+              <span class="tag">Verilog HDL</span>
+              <span class="tag">MATLAB</span>
+              <span class="tag">Assembly</span>
+            </div>
+          </div>
+          <div class="skill-card">
+            <div class="skill-kicker">Development & EDA</div>
+            <p class="skill-desc">Industry-standard software for circuit design, simulation, and development.</p>
+            <div class="tag-row">
+              <span class="tag">Synopsys TCAD</span>
+              <span class="tag">Cadence Virtuoso</span>
+              <span class="tag">Xilinx Vivado</span>
+              <span class="tag">ModelSim</span>
+              <span class="tag">Quartus Prime</span>
+              <span class="tag">Keil μVision</span>
+            </div>
+          </div>
+          <div class="skill-card">
+            <div class="skill-kicker">Focus Areas</div>
+            <p class="skill-desc">Understanding semiconductor devices from physics and fabrication to modeling and VLSI design.</p>
+            <div class="tag-row">
+              <span class="tag">Semiconductor Physics</span>
+              <span class="tag">Process Technology</span>
+              <span class="tag">Device Modeling</span>
+              <span class="tag">VLSI Design</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Education timeline on About page -->
+        <h2 style="font-size:1.1rem; font-weight:800; letter-spacing:-0.03em; margin-bottom:16px; color:var(--text);">Education</h2>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-year">Incoming</div>
+            <div class="tl-title">PhD — IIT Bombay</div>
+            <div class="tl-sub">CSIF Department · Long-wavelength III-nitride LED growth and characterization</div>
+            <p>Selected for doctoral research in a semiconductor-focused environment.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-year">2022 – 2026</div>
+            <div class="tl-title">B.Tech in Electronics and Communication Engineering</div>
+            <div class="tl-sub">Nirma University, Ahmedabad</div>
+            <p>Relevent Coursework: Electronic Devices and Circuits, VLSI Design, Analog CMOS IC Design, Testing
+and Verification of Digital Circuits, FPGA-Based System Design, Digital Logic Design, Analog Electronics,
+Machine Learning</p>
+          </div>
+        </div>
+
+        <footer class="footer">
+          <span>© <span id="yr-about"></span> Vatsal Thakor</span>
+          <div class="footer-links">
+            <button onclick="showPage('publications')">Publications</button>
+            <button onclick="showPage('research')">Research</button>
+            <button onclick="showPage('contact')">Contact</button>
+          </div>
+        </footer>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       EXPERIENCE
+  ════════════════════════════ -->
+  <div id="page-experience" class="page">
+    <div class="wrap">
+      <div class="page-header">
+        <h1>Experience</h1>
+      </div>
+
+      <div class="timeline">
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-year">Jan 2026 – Apr 2026</div>
+          <div class="tl-title">Research Intern</div>
+          <div class="tl-sub">Indian Institute of Technology Gandhinagar · NanoDC Lab</div>
+          <ul>
+            <li>Worked on semiconductor process modeling and simulation research.</li>
+            <li>Studied plasma-assisted fabrication processes, radical transport, and surface charging behavior.</li>
+            <li>Contributed to a research paper accepted at SISPAD 2026.</li>
+          </ul>
+          <div class="tag-row" style="margin-top:12px;">
+            <span class="tag">Process Simulation</span>
+            <span class="tag">Plasma Etching</span>
+            <span class="tag">TCAD</span>
+            <span class="tag">SISPAD 2026</span>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-year">May 2025 – Jun 2025</div>
+          <div class="tl-title">Summer Intern</div>
+          <div class="tl-sub">Reliance Industries Limited</div>
+          <ul>
+            <li>Gained hands-on exposure to industrial automation and shop-floor operations.</li>
+            <li>Observed control systems, sensors, RFID modules, and signal flow in a manufacturing setup.</li>
+            <li>Built a stronger understanding of process coordination and industrial reliability.</li>
+          </ul>
+          <div class="tag-row" style="margin-top:12px;">
+            <span class="tag">Automation</span>
+            <span class="tag">RFID</span>
+            <span class="tag">Control Systems</span>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2023 – 2025</div>
+          <div class="tl-title">Graphic Design Leadership</div>
+          <div class="tl-sub">ECO · Electronics and Communication Students' Organisation</div>
+          <ul>
+            <li>Held multiple design roles contributing to student organization communication and visual identity.</li>
+            <li>Managed creative work across different responsibilities over two years.</li>
+          </ul>
+          <div class="tag-row" style="margin-top:12px;">
+            <span class="tag">Design</span>
+            <span class="tag">Leadership</span>
+            <span class="tag">Communication</span>
+          </div>
+        </div>
+
+      </div>
+
+      <footer class="footer">
+        <span>© <span id="yr-exp"></span> Vatsal Thakor</span>
+        <div class="footer-links">
+          <button onclick="showPage('about')">About</button>
+          <button onclick="showPage('contact')">Contact</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       PROJECTS
+  ════════════════════════════ -->
+  <div id="page-projects" class="page">
+    <div class="wrap">
+      <div class="page-header">
+        <h1>Projects</h1>
+      </div>
+
+      <div class="projects-grid">
+
+        <div class="proj-card">
+          <div class="proj-kicker">Simulation</div>
+          <div class="proj-title">3D NAND Plasma Etch Simulation</div>
+          <p class="proj-desc">
+            Research-driven simulation of surface charging and feature evolution during plasma etching
+            of 3D NAND structures. Linked reactor-level conditions to microscale feature outcomes
+            using a custom computational model.
+          </p>
+          <div class="tag-row">
+            <span class="tag">TCAD</span>
+            <span class="tag">Plasma Physics</span>
+            <span class="tag">Surface Charging</span>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-kicker">ANALOG DESIGN</div>
+          <div class="proj-title">CMOS Operational Amplifier Design</div>
+          <p class="proj-desc">
+            Designed and optimized a transistor-level CMOS operational amplifier in Cadence Virtuoso, evaluating key performance metrics through DC, AC, and transient simulations while improving frequency response and stability.
+          </p>
+          <div class="tag-row">
+            <span class="tag">Cadence Virtuoso</span>
+            <span class="tag">Analog IC</span>
+            <span class="tag">CMOS Design</span>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-kicker">DIGITAL DESIGN</div>
+          <div class="proj-title">FPGA-Based Morse Code Generator</div>
+          <p class="proj-desc">
+            Built a Verilog HDL implementation of a Morse code generator using finite-state machines and lookup tables, verified through simulation and deployed on FPGA hardware.
+          </p>
+          <div class="tag-row">
+            <span class="tag">Verilog HDL</span>
+            <span class="tag">FPGA</span>
+            <span class="tag">FSM</span>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-kicker">EMBEDDED SYSTEMS</div>
+          <div class="proj-title">UART Communication Between 8051 Microcontrollers</div>
+          <p class="proj-desc">
+            Designed a UART-based communication interface between two 8051 microcontrollers with timer-configured baud rate generation and hardware-triggered actions based on received data.
+          </p>
+          <div class="tag-row">
+            <span class="tag">8051</span>
+            <span class="tag">UART</span>
+            <span class="tag">Embedded C</span>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-kicker">Portfolio</div>
+          <div class="proj-title">Personal Research Portfolio</div>
+          <p class="proj-desc">
+            This website — a single-file SPA combining research credibility with clean,
+            intentional design. Built in pure HTML and CSS with no external frameworks.
+          </p>
+          <div class="tag-row">
+            <span class="tag">HTML</span>
+            <span class="tag">CSS</span>
+            <span class="tag">Design</span>
+          </div>
+        </div>
+
+        
+
+      </div>
+
+      <footer class="footer">
+        <span>© <span id="yr-proj"></span> Vatsal Thakor</span>
+        <div class="footer-links">
+          <button onclick="showPage('about')">About</button>
+          <button onclick="showPage('contact')">Contact</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       PUBLICATIONS
+  ════════════════════════════ -->
+  <div id="page-publications" class="page">
+    <div class="wrap">
+      <div class="page-header">
+        <h1>Publications</h1>
+      </div>
+
+      <div class="pub-block">
+        <div class="pub-kicker">Conference Paper · 2026</div>
+        <div class="pub-title">
+          Surface Charging–Induced Profile Evolution in 3D NAND Etching:
+          Linking Reactor Conditions to Feature Evolution
+        </div>
+        <div class="pub-authors">
+          Siddharth Mohanty, <strong>Vatsal Thakor</strong>, Om Maheshwari, Nihar R. Mohapatra
+        </div>
+        <div class="pub-meta">
+          <strong>SISPAD 2026</strong>
+          <span class="dot">·</span>
+          <span>Semiconductor process simulation</span>
+          <span class="dot">·</span>
+          <span>Surface charging</span>
+          <span class="dot">·</span>
+          <span>3D NAND</span>
+        </div>
+        <p style="font-size:0.9rem; color:var(--muted); line-height:1.7;">
+          This paper presents a simulation-based investigation into how surface charging during
+          plasma etching drives profile distortion in 3D NAND memory structures. The work builds
+          a link from reactor-level plasma parameters down to the microscale feature evolution
+          observed in fabricated devices.
+        </p>
+        <div class="pub-links">
+          <a class="chip" href="Assets/Files/Sispad-Draft.pdf" target="_blank" rel="noopener">
+            ↓ Paper PDF
+          </a>
+        </div>
+      </div>
+
+      <p style="font-size:0.88rem; color:var(--subtle); margin-bottom:60px;">
+        ...
+      </p>
+
+      <footer class="footer">
+        <span>© <span id="yr-pub"></span> Vatsal Thakor</span>
+        <div class="footer-links">
+          <button onclick="showPage('about')">About</button>
+          <button onclick="showPage('contact')">Contact</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       CONTACT
+  ════════════════════════════ -->
+  <div id="page-contact" class="page">
+    <div class="wrap">
+      <div class="page-header">
+        <h1>Contact</h1>
+      </div>
+
+      <div class="contact-grid">
+
+        <div class="contact-card">
+          <div class="info-list">
+            <div class="info-row">
+              <div class="info-label">Email</div>
+              <div class="info-val">
+                <a href="mailto:vatsalthakor7@gmail.com">vatsalthakor7@gmail.com</a>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">LinkedIn</div>
+              <div class="info-val">
+                <a href="https://www.linkedin.com/in/vatsalthakor007/" target="_blank" rel="noopener">
+                  linkedin.com/in/vatsalthakor007
+                </a>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">GitHub</div>
+              <div class="info-val">
+                <a href="https://github.com/vatsalthakor007" target="_blank" rel="noopener">
+                  github.com/vatsalthakor007
+                </a>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Location</div>
+              <div class="info-val">Mumbai, India</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-card">
+          <div class="avail-kicker">Availability</div>
+          <div class="avail-title">Open to research collaboration and academic discussion</div>
+          <p class="avail-desc">
+            If you are reaching out about semiconductor research, device characterization,
+            plasma simulation, III-nitride devices, or related projects, feel free to connect
+            by email or LinkedIn.
+          </p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a class="btn btn-primary" href="mailto:vatsalthakor7@gmail.com">Send Email</a>
+            <a class="btn btn-outline" href="https://www.linkedin.com/in/vatsalthakor007/" target="_blank" rel="noopener">LinkedIn</a>
+          </div>
+        </div>
+
+      </div>
+
+      <footer class="footer">
+        <span>© <span id="yr-contact"></span> Vatsal Thakor</span>
+        <div class="footer-links">
+          <button onclick="showPage('about')">About</button>
+          <button onclick="showPage('publications')">Publications</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+</div> <!-- /page-host -->
+
+<script>
+  /* ── SPA ROUTING ── */
+  const pages = ['about', 'experience', 'projects', 'publications', 'contact'];
+
+  function showPage(id) {
+    if (!pages.includes(id)) return;
+
+    pages.forEach(p => {
+      const el = document.getElementById('page-' + p);
+      if (el) el.classList.toggle('visible', p === id);
+    });
+
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      tab.classList.toggle('active', tab.dataset.page === id);
+    });
+
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    history.replaceState(null, '', '#' + id);
+  }
+
+  /* ── LOAD FROM URL HASH ── */
+  const hash = location.hash.replace('#', '');
+  if (pages.includes(hash)) showPage(hash);
+
+  /* ── FOOTER YEARS ── */
+  const yr = new Date().getFullYear();
+  document.querySelectorAll('[id^="yr-"]').forEach(el => el.textContent = yr);
+</script>
+
+</body>
+</html>
