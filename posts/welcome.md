@@ -1,7 +1,6 @@
 ---
 title: Starting this blog
 date: September 2026
-tags: []
 excerpt: A short note on why I'm adding a blog to this site, and what I plan to write about here.
 ---
 I'm starting this blog as a place to write informally about the semiconductor process simulation and device physics work I'm doing, alongside things I pick up along the way in TCAD, plasma etching, and device modeling.
