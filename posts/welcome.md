@@ -8,3 +8,5 @@ I'm starting this blog as a place to write informally about the semiconductor pr
 Expect a mix of short technical notes, reflections on papers I'm reading, and updates on ongoing projects. Nothing here is meant to be polished the way a paper is — it's more of a working notebook.
 
 If something here is useful or you want to discuss it further, reach out on the Contact page.
+
+Thanks!
