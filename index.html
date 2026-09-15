@@ -76,6 +76,7 @@
       justify-content: space-between;
       height: var(--nav-h);
       gap: 16px;
+      position: relative;
     }
 
     .brand {
@@ -106,15 +107,88 @@
       font-weight: 800;
     }
 
-    .nav-tabs {
+    /* ── MENU TOGGLE ── */
+    .menu-toggle {
       display: flex;
       align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: transparent;
+      border: 1px solid var(--line);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 150ms ease, border-color 150ms ease;
+    }
+
+    .menu-toggle:hover {
+      background: var(--accent-soft);
+      border-color: rgba(24,72,232,0.2);
+    }
+
+    .menu-toggle-bars {
+      position: relative;
+      width: 18px;
+      height: 12px;
+    }
+
+    .menu-toggle-bars span {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--text);
+      transition: transform 200ms ease, opacity 200ms ease, top 200ms ease;
+    }
+
+    .menu-toggle-bars span:nth-child(1) { top: 0; }
+    .menu-toggle-bars span:nth-child(2) { top: 5px; }
+    .menu-toggle-bars span:nth-child(3) { top: 10px; }
+
+    .menu-toggle.open .menu-toggle-bars span:nth-child(1) {
+      top: 5px;
+      transform: rotate(45deg);
+    }
+    .menu-toggle.open .menu-toggle-bars span:nth-child(2) {
+      opacity: 0;
+    }
+    .menu-toggle.open .menu-toggle-bars span:nth-child(3) {
+      top: 5px;
+      transform: rotate(-45deg);
+    }
+
+    /* ── NAV DROPDOWN MENU ── */
+    .nav-menu {
+      position: absolute;
+      top: calc(var(--nav-h) - 12px);
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
       gap: 2px;
+      min-width: 200px;
+      opacity: 0;
+      transform: translateY(-8px);
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+      z-index: 210;
+    }
+
+    .nav-menu.open {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
     }
 
     .nav-tab {
       position: relative;
-      padding: 8px 14px;
+      padding: 10px 14px;
       border-radius: 999px;
       font-size: 13.5px;
       font-weight: 600;
@@ -126,9 +200,11 @@
       border: none;
       background: transparent;
       font-family: inherit;
+      text-align: left;
+      width: 100%;
     }
 
-    .nav-tab:hover { color: var(--text); }
+    .nav-tab:hover { color: var(--text); background: rgba(17,19,24,0.04); }
 
     .nav-tab.active {
       color: var(--accent);
@@ -883,9 +959,6 @@
       .contact-grid { grid-template-columns: 1fr; }
       .stat-row { flex-wrap: wrap; }
       .stat-item { flex: 0 0 calc(50% - 0.5px); border-right: none; border-bottom: 1px solid var(--line); }
-
-      .nav-tabs { gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-      .nav-tab { padding: 8px 10px; font-size: 13px; }
     }
 
     @media (max-width: 480px) {
@@ -905,7 +978,15 @@
       Vatsal Thakor
     </button>
 
-    <nav class="nav-tabs" aria-label="Sections">
+    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu" aria-expanded="false" onclick="toggleMenu()">
+      <span class="menu-toggle-bars">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+    </button>
+
+    <nav class="nav-menu" id="nav-menu" aria-label="Sections">
       <button class="nav-tab active" data-page="about"        onclick="showPage('about')">About</button>
       <button class="nav-tab"        data-page="experience"   onclick="showPage('experience')">Experience</button>
       <button class="nav-tab"        data-page="projects"     onclick="showPage('projects')">Projects</button>
@@ -949,7 +1030,6 @@
           </p>
 
           <div class="about-actions">
-            <a class="btn btn-primary" href="Assets/Files/Resume.pdf" target="_blank" rel="noopener">Download Resume</a>
             <button class="btn btn-outline" onclick="showPage('contact')">Get in Touch</button>
           </div>
 
@@ -1074,7 +1154,7 @@ Machine Learning</p>
         <div class="tl-item">
           <div class="tl-dot"></div>
           <div class="tl-year">2023 – 2025</div>
-          <div class="tl-title">Head|Graphics Design</div>
+          <div class="tl-title">Head | Graphics Design</div>
           <div class="tl-sub">ECO · Electronics and Communication Students' Organisation, Nirma University</div>
           <ul>
             <li>Held multiple design roles contributing to student organization communication and visual identity.</li>
@@ -1315,6 +1395,7 @@ Machine Learning</p>
             by email or LinkedIn.
           </p>
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a class="btn btn-primary" href="Assets/Files/Resume.pdf" target="_blank" rel="noopener">Download Resume</a>
             <a class="btn btn-primary" href="mailto:vatsalthakor7@gmail.com">Send Email</a>
             <a class="btn btn-outline" href="https://www.linkedin.com/in/vatsalthakor7/" target="_blank" rel="noopener">LinkedIn</a>
           </div>
@@ -1350,7 +1431,33 @@ Machine Learning</p>
 
     window.scrollTo({ top: 0, behavior: 'instant' });
     history.replaceState(null, '', '#' + id);
+    closeMenu();
   }
+
+  /* ── TOGGLE MENU ── */
+  function toggleMenu() {
+    const menu = document.getElementById('nav-menu');
+    const toggle = document.getElementById('menu-toggle');
+    const isOpen = menu.classList.toggle('open');
+    toggle.classList.toggle('open', isOpen);
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  }
+
+  function closeMenu() {
+    const menu = document.getElementById('nav-menu');
+    const toggle = document.getElementById('menu-toggle');
+    menu.classList.remove('open');
+    toggle.classList.remove('open');
+    toggle.setAttribute('aria-expanded', 'false');
+  }
+
+  document.addEventListener('click', (e) => {
+    const menu = document.getElementById('nav-menu');
+    const toggle = document.getElementById('menu-toggle');
+    if (!menu.classList.contains('open')) return;
+    if (menu.contains(e.target) || toggle.contains(e.target)) return;
+    closeMenu();
+  });
 
   /* ── LOAD FROM URL HASH ── */
   const hash = location.hash.replace('#', '');
