@@ -847,6 +847,99 @@
       margin-bottom: 60px;
     }
 
+    /* ── SINGLE POST PAGE ── */
+    .post-header { padding-top: 40px; }
+
+    .post-header .blog-date { display: block; margin-bottom: 10px; }
+
+    .post-header .tag-row { margin-top: 14px; }
+
+    .post-article {
+      display: block;
+      margin-top: 0;
+      padding-top: 0;
+      border-top: none;
+    }
+
+    .post-article > *:first-child { margin-top: 0; }
+
+    .post-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 36px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+      margin-bottom: 60px;
+    }
+
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid rgba(24,72,232,0.16);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+
+    .share-btn:hover { background: rgba(24,72,232,0.14); }
+
+    .share-btn svg { width: 15px; height: 15px; }
+
+    .post-back-btn {
+      display: inline-flex;
+      align-items: center;
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: 0 2px 8px rgba(17,19,24,0.05);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color 150ms ease;
+    }
+
+    .post-back-btn:hover { border-color: rgba(24,72,232,0.2); }
+
+    .share-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 26px;
+      transform: translateX(-50%) translateY(10px);
+      background: var(--text);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 16px;
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+      z-index: 400;
+      max-width: calc(100% - 32px);
+      text-align: center;
+    }
+
+    .share-toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
     /* ── CONTACT ── */
     .contact-grid {
       display: grid;
@@ -1345,6 +1438,24 @@ Machine Learning</p>
   </div>
 
   <!-- ════════════════════════════
+       SINGLE BLOG POST
+       Rendered by JS when the URL hash is #blog/<id>.
+  ════════════════════════════ -->
+  <div id="page-post" class="page">
+    <div class="wrap">
+      <div id="post-content">
+        <p class="blog-loading">Loading post…</p>
+      </div>
+
+      <footer class="footer">
+        <span>© <span id="yr-post"></span> Vatsal Thakor</span>
+        <div class="footer-links">
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
        CONTACT
   ════════════════════════════ -->
   <div id="page-contact" class="page">
@@ -1413,26 +1524,70 @@ Machine Learning</p>
 
 </div> <!-- /page-host -->
 
+<!-- Confirmation shown after a post link is copied -->
+<div class="share-toast" id="share-toast" role="status" aria-live="polite"></div>
+
 <script>
-  /* ── SPA ROUTING ── */
+  /* ── SPA ROUTING ──
+     Section pages live at #<page>, e.g. #blog.
+     A single blog post lives at its own URL, #blog/<id>, so the link
+     can be copied and shared and will open straight to that post. */
   const pages = ['about', 'experience', 'projects', 'publications', 'blog', 'contact'];
 
-  function showPage(id) {
-    if (!pages.includes(id)) return;
-
+  function hideAllPages() {
     pages.forEach(p => {
       const el = document.getElementById('page-' + p);
-      if (el) el.classList.toggle('visible', p === id);
+      if (el) el.classList.remove('visible');
     });
+    const postPage = document.getElementById('page-post');
+    if (postPage) postPage.classList.remove('visible');
+  }
 
+  function setActiveTab(id) {
     document.querySelectorAll('.nav-tab').forEach(tab => {
       tab.classList.toggle('active', tab.dataset.page === id);
     });
+  }
 
+  // Shows a section page without touching the URL.
+  function renderPage(id) {
+    hideAllPages();
+    const el = document.getElementById('page-' + id);
+    if (el) el.classList.add('visible');
+    setActiveTab(id);
     window.scrollTo({ top: 0, behavior: 'instant' });
-    history.replaceState(null, '', '#' + id);
     closeMenu();
   }
+
+  function showPage(id) {
+    if (!pages.includes(id)) return;
+    if (location.hash !== '#' + id) history.pushState(null, '', '#' + id);
+    renderPage(id);
+  }
+
+  function showPost(id) {
+    const hash = '#blog/' + encodeURIComponent(id);
+    if (location.hash !== hash) history.pushState(null, '', hash);
+    renderPost(id);
+  }
+
+  function postUrl(id) {
+    return location.origin + location.pathname + location.search + '#blog/' + encodeURIComponent(id);
+  }
+
+  // Reads the current URL and shows whatever it points at.
+  function route() {
+    const raw = decodeURIComponent(location.hash.replace(/^#/, ''));
+    if (raw.startsWith('blog/')) {
+      renderPost(raw.slice('blog/'.length));
+    } else if (pages.includes(raw)) {
+      renderPage(raw);
+    } else {
+      renderPage('about');
+    }
+  }
+
+  window.addEventListener('popstate', route);
 
   /* ── TOGGLE MENU ── */
   function toggleMenu() {
@@ -1458,10 +1613,6 @@ Machine Learning</p>
     if (menu.contains(e.target) || toggle.contains(e.target)) return;
     closeMenu();
   });
-
-  /* ── LOAD FROM URL HASH ── */
-  const hash = location.hash.replace('#', '');
-  if (pages.includes(hash)) showPage(hash);
 
   /* ── FOOTER YEARS ── */
   const yr = new Date().getFullYear();
@@ -1499,6 +1650,10 @@ Machine Learning</p>
 
      Nothing in this HTML/CSS/JS needs to change to add a post.
 
+     Each post also gets its own shareable address, #blog/<id> —
+     e.g. .../index.html#blog/3 — which opens that post on its own
+     page with the rest of the blog list hidden.
+
      NOTE: because this loads posts with fetch(), it only works when
      served over http(s) — e.g. the live GitHub Pages site, or a
      local server (run `python3 -m http.server` in this folder and
@@ -1532,32 +1687,44 @@ Machine Learning</p>
   ══════════════════════════════════════════════════════════════ */
 
   let loadedPosts = [];
+  let postsById = {};
 
-  async function renderBlog() {
+  async function loadPosts() {
+    const indexRes = await fetch('posts/index.json');
+    if (!indexRes.ok) throw new Error('index.json not found');
+    const ids = await indexRes.json();
+
+    const posts = await Promise.all(ids.map(async (id) => {
+      const path = `posts/${id}/${id}.md`;
+      const res = await fetch(path);
+      if (!res.ok) throw new Error('Could not load ' + path);
+      const raw = await res.text();
+      return parsePost(raw, id);
+    }));
+
+    loadedPosts = posts;
+    postsById = {};
+    posts.forEach(p => { postsById[String(p.id)] = p; });
+    return posts;
+  }
+
+  // Shared promise so the list and the single-post page both wait on
+  // the same fetch instead of loading everything twice.
+  const postsReady = loadPosts();
+
+  async function renderBlogList() {
     const list = document.getElementById('blog-list');
     if (!list) return;
 
     try {
-      const indexRes = await fetch('posts/index.json');
-      if (!indexRes.ok) throw new Error('index.json not found');
-      const ids = await indexRes.json();
+      const posts = await postsReady;
 
-      if (!ids.length) {
+      if (!posts.length) {
         list.outerHTML = '<div class="blog-empty" id="blog-list-empty">No posts yet — check back soon.</div>';
         return;
       }
 
-      const posts = await Promise.all(ids.map(async (id) => {
-        const path = `posts/${id}/${id}.md`;
-        const res = await fetch(path);
-        if (!res.ok) throw new Error('Could not load ' + path);
-        const raw = await res.text();
-        return parsePost(raw, id);
-      }));
-
-      loadedPosts = posts;
-
-      list.innerHTML = posts.map((post, i) => `
+      list.innerHTML = posts.map((post) => `
         <article class="blog-card">
           <div class="blog-card-top">
             <span class="blog-date">${escapeHtml(post.date || '')}</span>
@@ -1569,8 +1736,7 @@ Machine Learning</p>
               ${post.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}
             </div>
           ` : ''}
-          <button class="blog-read-btn" onclick="toggleBlogPost(${i})" id="blog-btn-${i}">Read post</button>
-          <div class="blog-body" id="blog-body-${i}">${post.html}</div>
+          <button class="blog-read-btn" onclick="showPost('${escapeAttr(post.id)}')">Read post</button>
         </article>
       `).join('');
 
@@ -1580,13 +1746,124 @@ Machine Learning</p>
     }
   }
 
+  // Renders one post on its own page: just that post, a share button,
+  // and a way back to the rest of the blog.
+  async function renderPost(id) {
+    const host = document.getElementById('page-post');
+    const content = document.getElementById('post-content');
+    if (!host || !content) return;
+
+    hideAllPages();
+    host.classList.add('visible');
+    setActiveTab('blog');
+    closeMenu();
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    content.innerHTML = '<p class="blog-loading" style="padding-top:40px;">Loading post…</p>';
+
+    let post;
+    try {
+      await postsReady;
+      post = postsById[String(id)];
+    } catch (err) {
+      console.error(err);
+      content.innerHTML = '<div class="blog-empty" style="margin-top:40px;">Couldn\'t load posts. If you\'re viewing this file locally, run a local server (see comment in the script) — posts only load over http(s).</div>';
+      return;
+    }
+
+    if (!post) {
+      content.innerHTML = `
+        <div class="blog-empty" style="margin-top:40px;">
+          That post isn't here.
+          <div style="margin-top:16px;">
+            <button class="post-back-btn" onclick="showPage('blog')">Read more blogs</button>
+          </div>
+        </div>`;
+      return;
+    }
+
+    document.title = (post.title ? post.title + ' — ' : '') + 'Vatsal Thakor';
+
+    content.innerHTML = `
+      <div class="page-header post-header">
+        <span class="blog-date">${escapeHtml(post.date || '')}</span>
+        <h1>${escapeHtml(post.title || '')}</h1>
+        ${(post.tags && post.tags.length) ? `
+          <div class="tag-row">
+            ${post.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}
+          </div>
+        ` : ''}
+      </div>
+
+      <article class="blog-body post-article open">${post.html}</article>
+
+      <div class="post-actions">
+        <button class="share-btn" onclick="sharePost('${escapeAttr(post.id)}')" aria-label="Share this post">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line>
+            <line x1="15.4" y1="6.5" x2="8.6" y2="10.5"></line>
+          </svg>
+          Share
+        </button>
+        <button class="post-back-btn" onclick="showPage('blog')">Read more blogs</button>
+      </div>
+    `;
+  }
+
+  // Uses the device share sheet where available, and falls back to
+  // copying the post's own link to the clipboard.
+  async function sharePost(id) {
+    const post = postsById[String(id)];
+    const url = postUrl(id);
+    const title = (post && post.title) ? post.title : 'Vatsal Thakor';
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, text: (post && post.excerpt) || '', url });
+        return;
+      } catch (err) {
+        if (err && err.name === 'AbortError') return;
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      showShareToast('Link copied');
+    } catch (err) {
+      const input = document.createElement('input');
+      input.value = url;
+      document.body.appendChild(input);
+      input.select();
+      try {
+        document.execCommand('copy');
+        showShareToast('Link copied');
+      } catch (e) {
+        showShareToast(url);
+      }
+      document.body.removeChild(input);
+    }
+  }
+
+  let shareToastTimer;
+  function showShareToast(message) {
+    const toast = document.getElementById('share-toast');
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add('visible');
+    clearTimeout(shareToastTimer);
+    shareToastTimer = setTimeout(() => toast.classList.remove('visible'), 2200);
+  }
+
   // Splits a Markdown file into its front-matter metadata and body,
   // then converts the body to HTML with marked.js. `id` is the
-  // post's folder/id (e.g. "1") and is used to resolve any relative
+  // post's folder/id (e.g. "1") and is used both as the post's
+  // shareable address (#blog/<id>) and to resolve any relative
   // media paths (images/GIFs/videos) to that post's own folder,
   // e.g. posts/<id>/....
   function parsePost(raw, id) {
-    const meta = { title: '', date: '', tags: [], excerpt: '' };
+    const meta = { title: '', date: '', tags: [], excerpt: '', id: String(id) };
     let body = raw;
 
     if (raw.trim().startsWith('---')) {
@@ -1604,7 +1881,7 @@ Machine Learning</p>
           const value = line.slice(colonIndex + 1).trim();
           if (key === 'tags') {
             meta.tags = value ? value.split(',').map(t => t.trim()).filter(Boolean) : [];
-          } else {
+          } else if (key !== 'id') {
             meta[key] = value;
           }
         });
@@ -1644,21 +1921,25 @@ Machine Learning</p>
     return container.innerHTML;
   }
 
-  function toggleBlogPost(i) {
-    const body = document.getElementById('blog-body-' + i);
-    const btn = document.getElementById('blog-btn-' + i);
-    if (!body || !btn) return;
-    const open = body.classList.toggle('open');
-    btn.textContent = open ? 'Hide post' : 'Read post';
-  }
-
   function escapeHtml(str) {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
   }
 
-  renderBlog();
+  // Safe for use inside a single-quoted inline handler attribute.
+  function escapeAttr(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/'/g, '&#39;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  /* ── INITIAL LOAD ── */
+  renderBlogList();
+  route();
 </script>
 
 </body>
