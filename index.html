@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Vatsal Thakor — semiconductor research, device physics, computational modeling." />
+  <meta name="description" content="Vatsal Thakor — Semiconductor Research: Materials and Devices." />
+  <meta property="og:title" content="Vatsal Thakor" />
+  <meta property="og:description" content="Vatsal Thakor — Semiconductor Research: Materials and Devices." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:title" content="Vatsal Thakor" />
+  <meta name="twitter:description" content="Vatsal Thakor — Semiconductor Research: Materials and Devices." />
   <meta name="theme-color" content="#f6f7fb" />
   <title>Vatsal Thakor</title>
 
@@ -852,6 +857,14 @@
 
     .post-header .blog-date { display: block; margin-bottom: 10px; }
 
+    .post-header .post-excerpt {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 54ch;
+      line-height: 1.7;
+      margin-top: 4px;
+    }
+
     .post-header .tag-row { margin-top: 14px; }
 
     .post-article {
@@ -1549,12 +1562,35 @@ Machine Learning</p>
     });
   }
 
+  // ── PAGE DESCRIPTION ──
+  // The line shown alongside a shared link. The site description is
+  // used everywhere except a single post, which gets its own.
+  const SITE_DESCRIPTION = 'Vatsal Thakor — Semiconductor Research: Materials and Devices.';
+
+  function postDescription(id) {
+    return 'Vatsal Thakor — Blog ' + id;
+  }
+
+  function setPageDescription(text) {
+    const selectors = [
+      'meta[name="description"]',
+      'meta[property="og:description"]',
+      'meta[name="twitter:description"]'
+    ];
+    selectors.forEach(sel => {
+      const el = document.querySelector(sel);
+      if (el) el.setAttribute('content', text);
+    });
+  }
+
   // Shows a section page without touching the URL.
   function renderPage(id) {
     hideAllPages();
     const el = document.getElementById('page-' + id);
     if (el) el.classList.add('visible');
     setActiveTab(id);
+    document.title = 'Vatsal Thakor';
+    setPageDescription(SITE_DESCRIPTION);
     window.scrollTo({ top: 0, behavior: 'instant' });
     closeMenu();
   }
@@ -1782,11 +1818,13 @@ Machine Learning</p>
     }
 
     document.title = (post.title ? post.title + ' — ' : '') + 'Vatsal Thakor';
+    setPageDescription(postDescription(post.id));
 
     content.innerHTML = `
       <div class="page-header post-header">
         <span class="blog-date">${escapeHtml(post.date || '')}</span>
         <h1>${escapeHtml(post.title || '')}</h1>
+        ${post.excerpt ? `<p class="post-excerpt">${escapeHtml(post.excerpt)}</p>` : ''}
         ${(post.tags && post.tags.length) ? `
           <div class="tag-row">
             ${post.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}
@@ -1812,6 +1850,10 @@ Machine Learning</p>
     `;
   }
 
+  // The line that goes out with a shared post link, in place of the
+  // post's own excerpt. Same message for every post.
+  const SHARE_MESSAGE = "Here's an interesting blog that I read";
+
   // Uses the device share sheet where available, and falls back to
   // copying the post's own link to the clipboard.
   async function sharePost(id) {
@@ -1821,7 +1863,7 @@ Machine Learning</p>
 
     if (navigator.share) {
       try {
-        await navigator.share({ title, text: (post && post.excerpt) || '', url });
+        await navigator.share({ title, text: SHARE_MESSAGE, url });
         return;
       } catch (err) {
         if (err && err.name === 'AbortError') return;
