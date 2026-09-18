@@ -511,6 +511,35 @@
       box-shadow: 0 0 0 3px var(--accent-soft), 0 0 0 5px var(--bg);
     }
 
+    /* Smoothly blinking dot (current PhD entry).
+       The background colour and glow fade in and out while the outer
+       ring stays solid, so the dot pulses without the line showing through. */
+    .tl-dot.blink {
+      animation: dot-blink 2s ease-in-out infinite;
+      will-change: background-color, box-shadow;
+    }
+
+    @keyframes dot-blink {
+      0%, 100% {
+        background-color: rgba(91,138,255,1);
+        box-shadow:
+          0 0 0 3px var(--accent-soft),
+          0 0 0 5px var(--bg),
+          0 0 14px 3px rgba(91,138,255,0.55);
+      }
+      50% {
+        background-color: rgba(91,138,255,0.18);
+        box-shadow:
+          0 0 0 3px rgba(91,138,255,0.04),
+          0 0 0 5px var(--bg),
+          0 0 0 0 rgba(91,138,255,0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .tl-dot.blink { animation: none; }
+    }
+
     .tl-year {
       font-size: 11px;
       font-weight: 800;
@@ -1189,7 +1218,8 @@
         <h2 style="font-size:1.1rem; font-weight:800; letter-spacing:-0.03em; margin-bottom:16px; color:var(--text);">Education</h2>
         <div class="timeline">
           <div class="tl-item">
-            <div class="tl-dot"></div>
+            <!-- "blink" class makes this dot pulse smoothly (current, ongoing PhD) -->
+            <div class="tl-dot blink"></div>
             <div class="tl-year">2026 - Present</div>
             <div class="tl-title">PhD </div>
             <div class="tl-sub">CSIF Department, IIT Bombay</div>
