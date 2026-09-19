@@ -1907,7 +1907,7 @@ Machine Learning</p>
       list.innerHTML = posts.map((post) => `
         <article class="blog-card">
           <div class="blog-card-top">
-            <span class="blog-date">${escapeHtml(post.date || '')}</span>
+            <span class="blog-date" data-nosnippet>${escapeHtml(post.date || '')}</span>
           </div>
           <div class="blog-title">${escapeHtml(post.title || '')}</div>
           <p class="blog-excerpt">${escapeHtml(post.excerpt || '')}</p>
