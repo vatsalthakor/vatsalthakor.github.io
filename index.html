@@ -944,6 +944,61 @@
       width: 100%;
     }
 
+    /* Blog images: smaller by default, click to zoom */
+.blog-body img {
+  max-width: min(100%, 520px);
+  cursor: zoom-in;
+  transition: opacity 150ms ease;
+}
+.blog-body img:hover { opacity: 0.92; }
+
+/* Image lightbox */
+.img-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(5,6,9,0.9);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  cursor: zoom-out;
+  transition: opacity 180ms ease;
+}
+.img-lightbox.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.img-lightbox img {
+  max-width: 95vw;
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  background: #fff;
+}
+.img-lightbox-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  font-family: inherit;
+}
+body.lightbox-open { overflow: hidden; }
+
     .blog-body figure {
       margin: 18px auto;
       display: flex;
@@ -1757,6 +1812,11 @@ Machine Learning</p>
 
 </div> <!-- /page-host -->
 
+  <!-- Image zoom overlay (used by blog post images) -->
+<div class="img-lightbox" id="img-lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
+  <button class="img-lightbox-close" id="img-lightbox-close" aria-label="Close image">&times;</button>
+  <img id="img-lightbox-img" src="" alt="" />
+</div>
 <!-- Confirmation shown after a post link is copied -->
 <div class="share-toast" id="share-toast" role="status" aria-live="polite"></div>
 
@@ -2205,6 +2265,39 @@ Machine Learning</p>
       .replace(/>/g, '&gt;');
   }
 
+  /* ── IMAGE CLICK-TO-ZOOM ──
+   Works for every image inside a blog post, including ones added later,
+   because the click is handled on the document rather than on each image. */
+(function () {
+  const box = document.getElementById('img-lightbox');
+  const boxImg = document.getElementById('img-lightbox-img');
+  const closeBtn = document.getElementById('img-lightbox-close');
+
+  function openLightbox(src, alt) {
+    boxImg.src = src;
+    boxImg.alt = alt || '';
+    box.classList.add('open');
+    document.body.classList.add('lightbox-open');
+  }
+
+  function closeLightbox() {
+    box.classList.remove('open');
+    document.body.classList.remove('lightbox-open');
+    setTimeout(() => { if (!box.classList.contains('open')) boxImg.src = ''; }, 200);
+  }
+
+  document.addEventListener('click', (e) => {
+    const img = e.target.closest('.blog-body img');
+    if (img) openLightbox(img.currentSrc || img.src, img.alt);
+  });
+
+  box.addEventListener('click', closeLightbox);
+  closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closeLightbox(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && box.classList.contains('open')) closeLightbox();
+  });
+})();
+  
   /* ── INITIAL LOAD ── */
   renderBlogList();
   route();
