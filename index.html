@@ -121,6 +121,23 @@
   <!-- Renders the Markdown post files into HTML -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/11.1.1/marked.min.js"></script>
 
+  <!-- Renders LaTeX equations -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        displayMath: [['$$','$$'], ['\\[','\\]']]
+      },
+      startup: {
+        typeset: false
+      }
+    };
+  </script>
+
+  <script async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+
   <style>
     /* ── TOKENS ── */
     :root {
@@ -2051,6 +2068,12 @@ Machine Learning</p>
         <button class="post-back-btn" onclick="showPage('blog')">Read more blogs</button>
       </div>
     `;
+
+    if (window.MathJax) {
+      MathJax.startup.promise.then(() => {
+        MathJax.typesetPromise([content]);
+      });
+    }
   }
 
   // The line that goes out with a shared post link, in place of the
