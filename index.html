@@ -2007,18 +2007,67 @@ Machine Learning</p>
   let loadedPosts = [];
   let postsById = {};
 
+  // Turns a post's free-text date (e.g. "October 2026", "12 Oct 2026",
+  // "2026-10-12") into a number so posts can be ordered newest first.
+  // Returns -Infinity when the date can't be read, which places that
+  // post after the dated ones (and keeps its index.json order).
+  const MONTH_NAMES = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+
+  function postDateValue(str) {
+    const s = String(str || '').trim().toLowerCase();
+    if (!s) return -Infinity;
+
+    const iso = s.match(/^(\d{4})-(\d{1,2})(?:-(\d{1,2}))?/);
+    if (iso) {
+      return new Date(+iso[1], +iso[2] - 1, iso[3] ? +iso[3] : 1).getTime();
+    }
+
+    const yearMatch = s.match(/\b(19|20)\d{2}\b/);
+    if (!yearMatch) return -Infinity;
+    const year = +yearMatch[0];
+
+    let month = 0;
+    const monthMatch = s.match(/[a-z]{3,}/g);
+    if (monthMatch) {
+      for (const word of monthMatch) {
+        const idx = MONTH_NAMES.indexOf(word.slice(0, 3));
+        if (idx !== -1) { month = idx; break; }
+      }
+    }
+
+    const withoutYear = s.replace(yearMatch[0], ' ');
+    const dayMatch = withoutYear.match(/\b([0-3]?\d)\b/);
+    const day = dayMatch ? Math.min(Math.max(+dayMatch[1], 1), 31) : 1;
+
+    return new Date(year, month, day).getTime();
+  }
+
+  // Newest first. Posts with the same (or unreadable) date keep the
+  // order they have in posts/index.json.
+  function sortPostsNewestFirst(posts) {
+    return posts
+      .map((post, index) => ({ post, index, value: postDateValue(post.date) }))
+      .sort((a, b) => {
+        if (a.value === b.value) return a.index - b.index;
+        return b.value - a.value;
+      })
+      .map(item => item.post);
+  }
+
   async function loadPosts() {
     const indexRes = await fetch('posts/index.json');
     if (!indexRes.ok) throw new Error('index.json not found');
     const ids = await indexRes.json();
 
-    const posts = await Promise.all(ids.map(async (id) => {
+    const loaded = await Promise.all(ids.map(async (id) => {
       const path = `posts/${id}/${id}.md`;
       const res = await fetch(path);
       if (!res.ok) throw new Error('Could not load ' + path);
       const raw = await res.text();
       return parsePost(raw, id);
     }));
+
+    const posts = sortPostsNewestFirst(loaded);
 
     loadedPosts = posts;
     postsById = {};
